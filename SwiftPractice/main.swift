@@ -296,6 +296,14 @@ class View{
 //  Concurrency/Sendable_Explanation.swift      — Sendable, @Sendable, nonisolated, where T: Sendable
 //  Concurrency/Concurrency_Explanation.swift   — DispatchQueue, Task, @escaping, @MainActor
 //  Concurrency/AsyncStream_Explanation.swift   — AsyncStream.makeStream(), consumer, SDKListener
+//  Concurrency/Actor_Explanation.swift         — actor, reentrancy, isolated, Mutex, GlobalActor
+//  Concurrency/TaskGroup_Explanation.swift     — TaskGroup, лимит параллелизма, discarding group
+//  Concurrency/Cancellation_Explanation.swift  — отмена, таймауты, дедлайны
+//  Concurrency/TaskLocal_Explanation.swift     — @TaskLocal, трассировка запросов
+//  Concurrency/AsyncSequence_Explanation.swift — свои AsyncSequence, debounce, merge
+//  Concurrency/Testing_Explanation.swift       — тесты async, ManualClock
+//  Concurrency/Swift6Migration_Explanation.swift — Swift 6, @preconcurrency, @concurrent
+//  MiniProject/FeedApp_MiniProject.swift       — лента + поиск + кэш + оффлайн
 //  SwiftUI/State_Explanation.swift             — @State
 //  SwiftUI/Observable_Explanation.swift        — @Observable
 //  SwiftUI/Bindable_Explanation.swift          — @Bindable

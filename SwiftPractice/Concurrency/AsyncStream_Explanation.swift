@@ -19,6 +19,7 @@
 // ============================================================================
 
 import Foundation
+import Synchronization
 
 enum AsyncStreamLesson {
 
@@ -83,10 +84,11 @@ enum AsyncStreamLesson {
     // (C) unfolding: pull-стиль — следующий элемент вычисляется по запросу.
     // Подходит для генераторов/пагинации (нет push-источника).
     static func ticker() -> AsyncStream<Int> {
-        var n = 0
+        // Замыкание unfolding — @Sendable: изменяемое состояние держим в Mutex.
+        let counter = Mutex(0)
         return AsyncStream(unfolding: {
             try? await Task.sleep(for: .milliseconds(10))
-            n += 1
+            let n = counter.withLock { $0 += 1; return $0 }
             return n < 4 ? n : nil                          // nil = конец потока
         })
     }
@@ -201,7 +203,8 @@ enum AsyncStreamLesson {
     }
 
     /// Сам SDK (в реальности — бинарный фреймворк).
-    final class ThirdPartySDK {
+    // @unchecked: имитация чужого SDK, который сам отвечает за потоки
+    final class ThirdPartySDK: @unchecked Sendable {
         weak var listener: SDKListener?                      // SDK хранит weak-ссылку
         func connect()    { listener?.sdkDidConnect()
                             DispatchQueue.global().async { [weak self] in
@@ -362,8 +365,11 @@ enum AsyncStreamLesson {
                 forName: Notification.Name("AppDidBecomeActive"), object: nil, queue: nil
             ) { _ in continuation.yield(Date()) }
 
+            // NSObjectProtocol не Sendable; removeObserver потокобезопасен ->
+            // осознанно снимаем проверку (комментарий обязателен!).
+            nonisolated(unsafe) let observer = token
             continuation.onTermination = { _ in
-                NotificationCenter.default.removeObserver(token)    // обязательная очистка
+                NotificationCenter.default.removeObserver(observer)    // обязательная очистка
             }
         }
     }
